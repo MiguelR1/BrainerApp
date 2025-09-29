@@ -234,3 +234,7 @@ select {
   cursor: pointer;
   font-size: 1.2rem;
 }
+
+h1{
+  color: var(--text-color);
+}

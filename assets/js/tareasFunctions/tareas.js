@@ -1,5 +1,7 @@
 const listaTodo = document.getElementById('listaTodo');
-const listaDone = document.getElementById('listaDone');
+const listaProgress = document.getElementById('listaProgress');
+const listaReview = document.getElementById('listaReview');
+
 const listaCheck = document.getElementById('listaDone');
 
 const tareaForm = document.getElementById('taskForm');
@@ -9,6 +11,9 @@ const lineDone = document.getElementById('lineDone');
 
 const paramId = new URLSearchParams(window.location.search).get('id');
 const tareas = localStorage.getItem('Tareas');
+
+let listaTareas = [];
+
 
 function checkTareaF(event, ulTarea){
     if (event.checked) {
@@ -58,9 +63,9 @@ function checkTareaF(event, ulTarea){
     localStorage.setItem('Tareas', JSON.stringify(tareasLS));
 }
 
-function mostrarTareas(tarea, taskId){
+function mostrarTareas(tarea){
     const ulTarea = document.createElement('ul');
-    ulTarea.id = taskId; 
+    ulTarea.id = tarea.id; 
 
     ulTarea.classList.add('flex', 'items-center', 'gap-2', 'draggable');
     ulTarea.setAttribute('draggable', 'true');
@@ -76,27 +81,36 @@ function mostrarTareas(tarea, taskId){
     });
 
     ulTarea.addEventListener('click', (event) => {
-        console.log('mostrar modal edit', event.target);
 
-        console.log('id',ulTarea.id);
+        for (let i = 0; i < tareasLS.length; i++) {
+            const tarea = tareasLS[i]; 
+            
+            if (tarea.idTablero == idTablero) {
+                const arrTareas = tarea.tarea;
+                const tareaEncontradaId = arrTareas.find(m => m.id = ulTarea.id);
 
-        console.log('tareasss',
-            tareasLS.sectionTareas
-        );
-        
-        
+                if (tareaEncontradaId) {
 
-        const modalEditTask = document.getElementById('taskModalEdit');
+                    console.log(tareaEncontradaId);
+                    
+                    const modalEditTask = document.getElementById('taskModalEdit');
+                    modalEditTask.style.display = 'flex';
+            
+                    const title = document.getElementById('task-title-edit');
+                    const description = document.getElementById('task-description-edit');
+                    const date = document.getElementById('task-dueDate-edit');
+                    const priority = document.getElementById('task-priority-edit');
+                    const tags = document.getElementById('task-tags-edit');
+            
+                    title.value = tareaEncontradaId.titulo;
+                    description.value = tareaEncontradaId.descripcion;
+                    date.value = tareaEncontradaId.date;
+                    priority.value = tareaEncontradaId.priority;
+                    tags.value = tareaEncontradaId.etiquetas;
+                }
+            }
+        } 
 
-        const title = document.getElementById('task-title-edit');
-        const description = document.getElementById('task-description-edit');
-        const date = document.getElementById('task-dueDate-edit');
-        const priority = document.getElementById('task-priority-edit');
-        const tags = document.getElementById('task-tags-edit');
-
-
-
-        modalEditTask.style.display = 'flex';
     })
 
     const checkTarea = document.createElement('input');
@@ -106,7 +120,7 @@ function mostrarTareas(tarea, taskId){
 
     const inputTarea = document.createElement('div');
     inputTarea.setAttribute('class', 'w-full border-b border-gray-200 focus:border-indigo-500 transition-all duration-300 ease-in-out focus:outline-none me-5 my-2 font-bold cursor-pointer');
-    inputTarea.innerHTML = tarea;
+    inputTarea.innerHTML = tarea.titulo;
     
     ulTarea.appendChild(checkTarea);
     ulTarea.appendChild(inputTarea);
@@ -115,7 +129,30 @@ function mostrarTareas(tarea, taskId){
         checkTareaF(event.target, ulTarea);
     });
 
-    listaTodo.appendChild(ulTarea);
+    switch (tarea.idSeccion) {
+        case 'listaTodo':
+            listaTodo.appendChild(ulTarea);
+            break;
+
+        case 'listaProgress':
+            listaProgress.appendChild(ulTarea);
+            break
+        case 'listaReview':
+            listaReview.appendChild(ulTarea);
+            break
+
+        case 'listaDone':
+
+        console.log(ulTarea);
+        
+            listaCheck.insertBefore(ulTarea, lineDone);
+            break
+
+        default:
+
+            break;
+    }
+
 }
 
 listasDrop.forEach(dropZone => {
@@ -134,47 +171,21 @@ listasDrop.forEach(dropZone => {
         event.currentTarget.classList.remove('dragover');
         const data = event.dataTransfer.getData('text/plain');
         const draggedElement = document.getElementById(data);
+        const seccionDrop = event.currentTarget.id;
+        const idTarea = draggedElement.id;
+
         
-        //texto de la tarea
-        const textoLi = draggedElement.children[1].getHTML();
-
-        //id del tablero
-        const ulId = event.target.id;
-        const idTarea = draggedElement.id
-
-        let tareas = [];
-
-        let tareaObject = {
-            id: ulId,
-            tareas: tareas
-        };
-
-        let tareaDetalle = {
-            id: idTarea,
-            titulo: textoLi,
-            done: false
-        }
-
-        for (let i = 0; i < tarea.length; i++) {
-            const element = tarea[i];
-            for (let i = 0; i < element.tareas.length; i++) {
-                const m = element.tareas[i];
-                if (m.id === idTarea) {
-                    const index = element.tareas.findIndex(m => m.id === idTarea);
-                    if (index !== -1) { element.tareas.splice(index, 1) }
-                }
+        for (let i = 0; i < tareasLS.length; i++) {
+            const tablero = tareasLS[i];
+            
+            if (tablero.idTablero == idTablero) {
+                const arrTareas = tablero.tarea;
+                const tareaEncontrada = arrTareas.find(m => m.id == idTarea);
+                tareaEncontrada.idSeccion = seccionDrop;
             }
         }
-
-        const mismoSecTarea = tarea.findIndex(m => m.id === ulId);
-
-        if (mismoSecTarea >= 0) {
-            tarea[mismoSecTarea].tareas.push(tareaDetalle)
-        }else{
-            tareas.push(tareaDetalle);
-            tarea.push(tareaObject); 
-        }
-
+        
+        
         if (draggedElement) {
             const listaDone = event.currentTarget.id;
             
@@ -191,7 +202,7 @@ listasDrop.forEach(dropZone => {
     });
 });
 
-let tareasLS = {};
+let tareasLS = [];
 let tarea = [];
 
 tareaForm.addEventListener('submit', (event) => {
@@ -201,59 +212,51 @@ tareaForm.addEventListener('submit', (event) => {
     const descripcion = document.getElementById('task-description').value;
     const date = document.getElementById('task-dueDate').value;
     const priority = document.getElementById('task-priority').value;
-    const etiquetas = document.getElementById('task-tags').value;
+    const etiquetas = document.getElementById('task-tags').value; 
+    const id = 'tarea-' + Date.now();
 
     let tarea = {
+        id: id,
         titulo: title,
         descripcion: descripcion,
         date: date,
         priority: priority,
         etiquetas: etiquetas
     }
-
-    console.log(tarea);
-
     guardarTarea(tarea);
 })
 
-function guardarTarea(tareaParam){
-    const taskId = 'task-' + Date.now();
-    
-    mostrarTareas(tareaParam.titulo, taskId);
 
-    const tableroInsertado = 'listaTodo';
-    
+function guardarTarea(tareaParam){
+
     let tareaDetalle = {
-        id: taskId,
+        idSeccion: 'listaTodo',
+        id: tareaParam.id,
         titulo: tareaParam.titulo,
         descripcion: tareaParam.descripcion,
         date: tareaParam.date,
         priority: tareaParam.priority,
+        etiquetas: tareaParam.etiquetas,
         done:false
     };
 
-    let tareasA = [];
+    mostrarTareas(tareaDetalle);
 
-    tareasA.push(tareaDetalle);
-
-    let tareaObject = {
-        id: tableroInsertado,
-        tareas: tareasA
-    }
+    const tableroEncontrado = tareasLS.findIndex(m => m.idTablero == idTablero)
     
-    tareasLS.id = paramId;
-    tareasLS.sectionTareas = tarea;
-
-    
-    const indexExiste =  tarea.findIndex(m => m.id = tableroInsertado)
-    if (indexExiste != -1) {    
-        tarea[indexExiste].tareas.push(tareaDetalle);
+    if (tableroEncontrado >= 0) {
+        tareasLS[tableroEncontrado].tarea.push(tareaDetalle)
     }else{
-        tarea.push(tareaObject);        
+        tarea.push(tareaDetalle);
+        
+        tareasLS.push({
+            idTablero: idTablero,
+            tarea: tarea
+        })
     }
-
+    
     localStorage.setItem('Tareas', JSON.stringify(tareasLS));
-    closeModal();
+    closeModal('taskModal');
 }
 
 function openModal() {
@@ -261,7 +264,7 @@ function openModal() {
     taskModal.style.display = 'flex';
 }
 
-function closeModal() {
-    const taskModal = document.getElementById('taskModal');
+function closeModal(div) {
+    const taskModal = document.getElementById(div);
     taskModal.style.display = 'none';
 }

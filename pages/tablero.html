@@ -38,7 +38,7 @@
 
             <div id="taskModal" class="modal-overlay">
               <div class="modal-content">
-                <button class="close-btn w-full flex justify-end" onclick="closeModal()">&times;</button>
+                <button class="close-btn w-full flex justify-end" onclick="closeModal('taskModal')">&times;</button>
                 <form id="taskForm">
                   <div class="form-group">
                     <label for="task-title">Título</label>
@@ -73,7 +73,7 @@
 
                   <div class="modal-footer">
                     <button type="submit" class="btn primary-btn">Guardar Tarea</button>
-                    <button type="button" class="btn secondary-btn" id="cancelBtn" onclick="closeModal()">Cancelar</button>
+                    <button type="button" class="btn secondary-btn" id="cancelBtn" onclick="closeModal('taskModal')">Cancelar</button>
                   </div>
                 </form>
               </div>
@@ -116,7 +116,7 @@
 
   <div id="taskModalEdit" class="modal-overlay">
     <div class="modal-content">
-      <button class="close-btn w-full flex justify-end" onclick="closeModal()">&times;</button>
+      <button class="close-btn w-full flex justify-end" onclick="closeModal('taskModalEdit')">&times;</button>
       <form id="taskForm">
         <div class="form-group">
           <label for="task-title">Título</label>
@@ -131,12 +131,12 @@
         <div class="flex justify-between">
           <div class="form-group">
             <label for="task-dueDate">Fecha de vencimiento</label>
-            <input type="date" id="task-dueDate-edit" />
+            <input type="date" id="task-dueDate-edit" disabled/>
           </div>
 
           <div class="form-group">
             <label for="task-priority">Prioridad</label>
-            <select id="task-priority-edit" class="pe-2">
+            <select id="task-priority-edit" class="pe-2 !cursor-default" disabled>
               <option value="baja">Baja</option>
               <option value="media">Media</option>
               <option value="alta">Alta</option>
@@ -146,19 +146,36 @@
 
         <div class="form-group">
           <label for="task-tags">Etiquetas (separadas por comas)</label>
-          <input type="text" id="task-tags-edit" placeholder="Ej: Urgente, Personal" />
-        </div>
-
-        <div class="modal-footer">
-          <button type="submit" class="btn primary-btn">Guardar Tarea</button>
-          <button type="button" class="btn secondary-btn" id="cancelBtn" onclick="closeModal()">Cancelar</button>
+          <input type="text" id="task-tags-edit" placeholder="Ej: Urgente, Personal" disabled/>
         </div>
       </form>
     </div>
   </div>
     
+  <script>
+    const queryString = window.location.search; 
+    const urlParams = new URLSearchParams(queryString);
+    const idTablero = urlParams.get('id');
+  </script>
   <script src="https://kit.fontawesome.com/d89d05ce5f.js" crossorigin="anonymous"></script>
   <script src="/assets/js/tareasFunctions/tareas.js"></script>
   <script src="/assets/js/main.js"></script>
+
+  <script>
+    const tareasGetLS = localStorage.getItem('Tareas');
+    if (tareasGetLS) {
+      tareasLS = JSON.parse(tareasGetLS);
+
+      for (let i = 0; i < tareasLS.length; i++) {
+        const tarea = tareasLS[i]; 
+        
+        if (tarea.idTablero == idTablero) {
+          const arrTareas = tarea.tarea[i];
+      
+          mostrarTareas(arrTareas)
+        }
+      } 
+    }
+  </script>
 </body>
 </html>
