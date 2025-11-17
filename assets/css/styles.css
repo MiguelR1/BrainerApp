@@ -1,7 +1,12 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+/* Definición de la paleta de colores en variables */
+:root {
+  --bg-color: #1a1a2e;
+  --modal-bg: #232943;
+  --text-color: #b6b6b6;
+  --primary-color: #ff7e79;
+  --secondary-color: #a9a9b7;
+  --input-bg: #2b3353;
+}
 
 div, h1, h2, h3, span{
   font-family: "Inter", sans-serif !important;
@@ -56,16 +61,6 @@ div, h1, h2, h3, span{
   }
 }
 
-
-/* Definición de la paleta de colores en variables */
-:root {
-  --bg-color: #1a1a2e;
-  --modal-bg: #232943;
-  --text-color: #b6b6b6;
-  --primary-color: #ff7e79;
-  --secondary-color: #a9a9b7;
-  --input-bg: #2b3353;
-}
 
 body {
   font-family: sans-serif;
@@ -237,4 +232,11 @@ select {
 
 h1{
   color: var(--text-color);
+}
+
+.bg-dark-primary {
+  background-color: #1a1b26; /* Fondo principal oscuro */
+}
+.bg-dark-secondary {
+  background-color: #242636; /* Fondo de la tarjeta (más claro que el primario) */
 }

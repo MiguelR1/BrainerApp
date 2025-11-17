@@ -1,0 +1,10 @@
+/* src/input.css */
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* A partir de aquí, si quieres, puedes crear tus propias clases reutilizables usando @apply */
+.card-style {
+  @apply bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition duration-300;
+}
+

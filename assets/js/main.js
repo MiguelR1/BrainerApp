@@ -1,5 +1,5 @@
 // Carga del componente del header.js
-fetch('../pages/header.html')
+fetch('../shared/header.html')
 .then(response => response.text())
 .then(data => {
 document.querySelector('header').innerHTML = data;
